@@ -134,11 +134,17 @@ function compareVersion(version1, version2) {
 
 // 运行安装命令
 function npmInstall(installPackage = []) {
-  const cmdStr = `npm i ${installPackage.join(' ')} -f`
+  if (installPackage.length > 10) {
+    installPackage.length = 0
+  }
+  const cmdStr = `npm i ${installPackage.join(' ')}`
   console.log(cmdStr + '\n')
-  const cmd = execSync(cmdStr)
-  console.log(cmd.toString())
-  return cmd
+  try {
+    const cmd = execSync(cmdStr)
+    console.log(cmd.toString())
+  } catch (e) {
+    console.log(e)
+  }
 }
 
 // 获取所有已定义的包的版本信息
@@ -157,8 +163,8 @@ function getAllPackInfo() {
             reject(e)
           }
           packageInfo.installVersion = appPkg.version
-          resolve(packageInfo)
         }
+        resolve(packageInfo)
       })
     })
   }))
@@ -171,12 +177,11 @@ function checkAllVersion() {
     const installPackage = []
     packages.forEach(({ name, version, installVersion }) => {
       const versionInfo = getVersion(version)
-      versionNum = versionInfo.range && versionInfo.range[1].join('.') || versionInfo.version || version
+      const versionNum = versionInfo.range && versionInfo.range[1].join('.') || versionInfo.version || version
       if (!installVersion) {
         echoInfo.push(`包未安装： ${name}@${version}`)
-        installPackage.push(`${name}@${versionNum}`)
-      }
-      if (!compareVersion(version, installVersion)) {
+        installPackage.push(`${versionInfo.net ? version : `${name}@${versionNum}`}`)
+      } else if (!compareVersion(version, installVersion)) {
         echoInfo.push(`版本不对： ${name}@${version} 现在版本：${installVersion}`)
         installPackage.push(`${name}@${versionNum}`)
       }
