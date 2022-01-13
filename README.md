@@ -1,6 +1,29 @@
 ## NPM Package Manager
 ##### npm包版本检查，自动安装
 
+- 如何使用？
+> 将文件放到根目录下，与`package.json`同级
+```
+├ node_modules
+├ checkVersion.js
+└ package.json
+```
+> 修改package.json，添加一行npm命令
+```
+  "scripts": {
+    // ... 其他命令
+    "check-version": "node checkVersion.js"
+  },
+```
+> 在开发和构建命令前添加版本检查命令
+```
+  "scripts": {
+    "check-version": "node checkVersion.js",
+    "serve": "npm run check-version && vue-cli-service serve",
+    "build": "npm run check-version && vue-cli-service build"
+  },
+```
+
 ```
 version
 
