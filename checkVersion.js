@@ -30,6 +30,7 @@ function getVersion(version) {
     compatible: /^\^/.test(version),            // 兼容某个版本
     any: !version || /^\*$/.test(version),      // 任意版本
     net: /^\w+\+/.test(version),                // 来自网络
+    local: /^file:/.test(version),                // 来自本地
   }
 }
 
@@ -177,6 +178,9 @@ function checkAllVersion() {
     const installPackage = []
     packages.forEach(({ name, version, installVersion }) => {
       const versionInfo = getVersion(version)
+      if (versionInfo.local) {
+        return false
+      }
       const versionNum = versionInfo.range && versionInfo.range[1].join('.') || versionInfo.version || version
       if (!installVersion) {
         echoInfo.push(`包未安装： ${name}@${version}`)
